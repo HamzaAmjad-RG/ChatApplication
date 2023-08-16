@@ -79,4 +79,16 @@ public class Messages
          }
       }
    }
+
+   public class CreateGroup
+   {
+      public string GroupId { get; private set; }
+      public string GroupName { get; private set; }
+
+      public CreateGroup(string groupId, string groupName)
+      {
+         GroupName = groupName;
+         GroupId = groupId;
+      }
+   }
 }
