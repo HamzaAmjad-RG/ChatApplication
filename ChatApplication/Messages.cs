@@ -85,10 +85,27 @@ public class Messages
       public string GroupId { get; private set; }
       public string GroupName { get; private set; }
 
-      public CreateGroup(string groupId, string groupName)
+      public IActorRef CreatorRef { get; private set; }
+
+      public ActorSelection GroupHandler { get; private set;  }
+      public CreateGroup(string groupId, string groupName,IActorRef creatorRef)
       {
          GroupName = groupName;
          GroupId = groupId;
+         CreatorRef = creatorRef;
+      }
+
+      public CreateGroup(string groupId, string groupName)
+      {
+         GroupId = groupId;
+         GroupName = groupName;
+      }
+
+      public CreateGroup(string groupId, string groupName, ActorSelection groupHandler)
+      {
+         GroupName = groupName;
+         GroupId = groupId;
+         GroupHandler = groupHandler;
       }
    }
 }

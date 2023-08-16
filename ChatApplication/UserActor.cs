@@ -1,10 +1,12 @@
 using Akka.Actor;
+using Microsoft.VisualBasic;
+
 namespace ChatApplication;
 
 public class UserActor:UntypedActor
 {
     public static Props Props(string userName) => Akka.Actor.Props.Create(() => new UserActor(userName));
-    protected string UserName { get; private set; }
+    private string UserName { get; set; }
 
     private Dictionary<string, string> MessagesCollection = new();
     public UserActor(string userName)
@@ -13,25 +15,31 @@ public class UserActor:UntypedActor
     }
     protected override void OnReceive(object message)
     {
-        if(message is Messages.ShowUser)
+        switch (message)
         {
-            var msg = message as Messages.ShowUser;
-            msg.DisplayUser(UserName);
-        }
-        else if(message is Messages.SendMessage)
-        {
-            var msg = message as Messages.SendMessage;
-            msg.ReceiverRef.Tell(new Messages.ReceiveMessage(msg.MessageBody,UserName));
-        }
-        else if (message is Messages.ReceiveMessage)
-        {
-            var msg = message as Messages.ReceiveMessage;
-            MessagesCollection.Add(msg.SenderUser,msg.MessageBody);
-        }
-        else  if(message is Messages.ShowMessages)
-        {
-            var msg = message as Messages.ShowMessages;
-            msg.Display(MessagesCollection);
+            case Messages.ShowUser user:
+            {
+                user.DisplayUser(UserName);
+                break;
+            }
+            case Messages.SendMessage sendMessage:
+            {
+                sendMessage.ReceiverRef.Tell(new Messages.ReceiveMessage(sendMessage.MessageBody,UserName));
+                break;
+            }
+            case Messages.ReceiveMessage receiveMessage:
+            {
+                MessagesCollection.Add(receiveMessage.SenderUser,receiveMessage.MessageBody);
+                break;
+            }
+            case Messages.ShowMessages messages:
+            {
+                messages.Display(MessagesCollection);
+                break;
+            }
+            case Messages.CreateGroup createGroup:
+                createGroup.GroupHandler.Tell(new Messages.CreateGroup(createGroup.GroupId,createGroup.GroupName,Self));
+                break;
         }
     }
 }
