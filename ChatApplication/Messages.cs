@@ -108,4 +108,55 @@ public class Messages
          GroupHandler = groupHandler;
       }
    }
+   public class JoinGroup
+   {
+      public string GroupId { get; private set; }
+      public ActorSelection? GroupHandler { get; private set; }
+
+      public IActorRef? GroupMember { get; private set; }
+      public JoinGroup(string groupId, ActorSelection groupHandler=null,IActorRef groupMember=null)
+      {
+         GroupId = groupId;
+         GroupHandler = groupHandler;
+         GroupMember = groupMember;
+      }
+
+   }
+   public class SendMessageToGroup
+   {
+      public string GroupId { get; private set; }
+      public ActorSelection? GroupHandler { get; private set; }
+      public IActorRef? GroupMember { get; private set; }
+      public string UserName { get; private set; }
+      public string MessageBody { get; private set; }
+      public SendMessageToGroup(string groupId, ActorSelection groupHandler=null,IActorRef groupMember=null,string userName=null,string messageBody=null)
+      {
+         GroupId = groupId;
+         GroupHandler = groupHandler;
+         GroupMember = groupMember;
+         UserName = userName;
+         MessageBody = messageBody;
+      }
+   }
+   public class ShowGroupChat
+   {
+      public string GroupId { get; private set; }
+      public ActorSelection? GroupHandler { get; private set; }
+      public IActorRef? GroupMember { get; private set; }
+
+      public ShowGroupChat(string groupId,ActorSelection groupHandler=null,IActorRef groupMember=null)
+      {
+         GroupId = groupId;
+         GroupHandler = groupHandler;
+         GroupMember = groupMember;
+      }
+      public void DisplayGroupChat(Dictionary<string, string> chat)
+      {
+         Console.WriteLine("*********Group Chat************");
+         foreach (var msg in chat)
+         {
+            Console.WriteLine($"{msg.Key}: {msg.Value}");
+         }
+      }
+   }
 }

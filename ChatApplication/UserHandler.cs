@@ -9,7 +9,7 @@ public class UserHandler:UntypedActor
     private Dictionary<string, IActorRef> usersToActor = new();
     private IActorRef user { get; set; }
 
-    private ActorSelection GroupHanlder = Context.ActorSelection("akka://ChatActorSystem/user/GroupHandler");
+    private ActorSelection GroupHandlerVar = Context.ActorSelection("akka://ChatActorSystem/user/GroupHandler");
     protected override void OnReceive(object message)
     {
         switch (message)
@@ -39,7 +39,16 @@ public class UserHandler:UntypedActor
                 user.Tell(message);
                 break;
             case Messages.CreateGroup msg:
-                user.Tell(new Messages.CreateGroup(msg.GroupId,msg.GroupName,GroupHanlder));
+                user.Tell(new Messages.CreateGroup(msg.GroupId,msg.GroupName,GroupHandlerVar));
+                break;
+            case Messages.JoinGroup msg:
+                user.Tell(new Messages.JoinGroup(groupId:msg.GroupId,groupHandler:GroupHandlerVar));
+                break;
+            case Messages.SendMessageToGroup msg:
+                user.Tell(new Messages.SendMessageToGroup(groupId:msg.GroupId,groupHandler:GroupHandlerVar,messageBody:msg.MessageBody));
+                break;
+            case Messages.ShowGroupChat msg:
+                user.Tell(new Messages.ShowGroupChat(msg.GroupId,GroupHandlerVar));
                 break;
         }
     }

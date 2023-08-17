@@ -19,6 +19,24 @@ public class GroupHandler: UntypedActor
                 Group.Tell(msg);
                 Console.WriteLine("Group Created!!");
                 break;
+            case Messages.JoinGroup msg:
+                if (GroupsToActor.TryGetValue(msg.GroupId, out var groupRef))
+                {
+                    groupRef.Tell(msg);
+                }
+                break;
+            case Messages.SendMessageToGroup messageToGroup:
+                if (GroupsToActor.TryGetValue(messageToGroup.GroupId, out var groupRef1))
+                {
+                    groupRef1.Tell(messageToGroup);
+                }
+                break;
+            case Messages.ShowGroupChat showGroupChat:
+                if (GroupsToActor.TryGetValue(showGroupChat.GroupId, out var groupRef2))
+                {
+                    groupRef2.Tell(showGroupChat);
+                }
+                break;
         }
     }
 }
