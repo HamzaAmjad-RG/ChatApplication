@@ -1,14 +1,10 @@
 using Akka.Actor;
 namespace ChatApplication;
-
-
 public class UserHandler:UntypedActor
 {
     public static Props Props() => Akka.Actor.Props.Create(() => new UserHandler());
-
     private Dictionary<string, IActorRef> usersToActor = new();
     private IActorRef user { get; set; }
-
     private ActorSelection GroupHandlerVar = Context.ActorSelection("akka://ChatActorSystem/user/GroupHandler");
     protected override void OnReceive(object message)
     {

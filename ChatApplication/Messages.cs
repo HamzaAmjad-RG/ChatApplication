@@ -1,7 +1,5 @@
 using Akka.Actor;
-
 namespace ChatApplication;
-
 public class Messages
 {
    public class CreateUser
@@ -143,7 +141,6 @@ public class Messages
       public string GroupId { get; private set; }
       public ActorSelection? GroupHandler { get; private set; }
       public IActorRef? GroupMember { get; private set; }
-
       public ShowGroupChat(string groupId,ActorSelection groupHandler=null,IActorRef groupMember=null)
       {
          GroupId = groupId;

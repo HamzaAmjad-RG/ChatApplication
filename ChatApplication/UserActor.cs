@@ -1,13 +1,9 @@
 using Akka.Actor;
-using Microsoft.VisualBasic;
-
 namespace ChatApplication;
-
 public class UserActor:UntypedActor
 {
     public static Props Props(string userName) => Akka.Actor.Props.Create(() => new UserActor(userName));
     private string UserName { get; set; }
-
     private Dictionary<string, string> MessagesCollection = new();
     public UserActor(string userName)
     {

@@ -1,7 +1,5 @@
 ﻿using Akka.Actor;
-
 namespace ChatApplication;
-
 class ChatApp
 {
     public static ActorSystem ChatActorSystem;
@@ -40,7 +38,5 @@ class ChatApp
         userHandler.Tell(new Messages.ShowGroupChat("Group-01"));
 
         ChatActorSystem.WhenTerminated.Wait();
-
     }
-
 }

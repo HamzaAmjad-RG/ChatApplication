@@ -1,6 +1,5 @@
 using Akka.Actor;
 namespace ChatApplication;
-
 public class GroupActor:UntypedActor
 {
     public static Props Props(string groupName, string groupId) =>
@@ -9,19 +8,15 @@ public class GroupActor:UntypedActor
     private string GroupId { get; set; }
     private List<IActorRef> Users;
     public Dictionary<string, string> GroupChat { get; set; } = new();
-
-
     public GroupActor(string groupName, string groupId)
     {
         GroupName = groupName;
         GroupId = groupId;
     }
-
     protected override void PreStart()
     {
         Users = new List<IActorRef>();
     }
-
     protected override void OnReceive(object message)
     {
         switch (message)
