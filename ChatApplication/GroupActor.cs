@@ -6,42 +6,42 @@ public class GroupActor:UntypedActor
         Akka.Actor.Props.Create(()=>new GroupActor(groupName, groupId));
     private string GroupName { get; set; }
     private string GroupId { get; set; }
-    private List<IActorRef> Users;
-    public Dictionary<string, string> GroupChat { get; set; } = new();
-    public GroupActor(string groupName, string groupId)
+    private List<IActorRef> _users = new();
+    private Dictionary<string, string?> GroupChat { get; set; } = new();
+
+    private GroupActor(string groupName, string groupId)
     {
-        GroupName = groupName;
+        GroupName = groupName ?? throw new ArgumentNullException(nameof(groupName));
         GroupId = groupId;
-    }
-    protected override void PreStart()
-    {
-        Users = new List<IActorRef>();
     }
     protected override void OnReceive(object message)
     {
         switch (message)
         {
             case Messages.CreateGroup msg:
-                Users.Add(msg.CreatorRef);
+                if (msg.CreatorRef != null) _users.Add(msg.CreatorRef);
                 GroupName = msg.GroupName;
                 GroupId = msg.GroupId;
                 break;
+
             case Messages.JoinGroup msg:
-                Users.Add(msg.GroupMember);
-                Console.WriteLine($"Total Members in {GroupName} are now {Users.Count}");
+                if (msg.GroupMember != null) _users.Add(msg.GroupMember);
+                Console.WriteLine($"Total Members in {GroupName} are now {_users.Count}");
                 break;
+
             case Messages.SendMessageToGroup msg:
-                if (Users.Contains(msg.GroupMember))
+                if (msg.GroupMember != null && _users.Contains(msg.GroupMember))
                 {
-                    GroupChat.Add(msg.UserName,msg.MessageBody);
+                    if (msg.UserName != null) GroupChat.Add(msg.UserName, msg.MessageBody);
                 }
                 else
                 {
                     Console.WriteLine("You are not in the Group!!!");
                 }
                 break;
+
             case Messages.ShowGroupChat msg:
-                if (Users.Contains(msg.GroupMember))
+                if (msg.GroupMember != null && _users.Contains(msg.GroupMember))
                 {
                    msg.DisplayGroupChat(chat:GroupChat);
                 }
