@@ -1,37 +1,50 @@
 using Akka.Actor;
 namespace ChatApplication;
-
 public class UserActor:UntypedActor
 {
-    public static Props Props(string userName) => Akka.Actor.Props.Create(() => new UserActor(userName));
-    protected string UserName { get; private set; }
-
-    private Dictionary<string, string> MessagesCollection = new();
-    public UserActor(string userName)
+    public static Props Props(string? userName) => Akka.Actor.Props.Create(() => new UserActor(userName));
+    private string? UserName { get; set; }
+    private readonly Dictionary<string, string> _messagesCollection = new();
+    public UserActor(string? userName)
     {
         UserName = userName;
     }
     protected override void OnReceive(object message)
     {
-        if(message is Messages.ShowUser)
+        switch (message)
         {
-            var msg = message as Messages.ShowUser;
-            msg.DisplayUser(UserName);
-        }
-        else if(message is Messages.SendMessage)
-        {
-            var msg = message as Messages.SendMessage;
-            msg.ReceiverRef.Tell(new Messages.ReceiveMessage(msg.MessageBody,UserName));
-        }
-        else if (message is Messages.ReceiveMessage)
-        {
-            var msg = message as Messages.ReceiveMessage;
-            MessagesCollection.Add(msg.SenderUser,msg.MessageBody);
-        }
-        else  if(message is Messages.ShowMessages)
-        {
-            var msg = message as Messages.ShowMessages;
-            msg.Display(MessagesCollection);
+            case Messages.ShowUser user:
+                user.DisplayUser(UserName);
+                break;
+
+            case Messages.SendMessage sendMessage:
+                sendMessage.ReceiverRef.Tell(new Messages.ReceiveMessage(sendMessage.MessageBody,UserName));
+                break;
+
+            case Messages.ReceiveMessage receiveMessage:
+                if (receiveMessage.SenderUser != null)
+                    _messagesCollection.Add(receiveMessage.SenderUser, receiveMessage.MessageBody);
+                break;
+
+            case Messages.ShowMessages messages:
+                messages.Display(_messagesCollection);
+                break;
+
+            case Messages.CreateGroup createGroup:
+                createGroup.GroupHandler?.Tell(new Messages.CreateGroup(createGroup.GroupId,createGroup.GroupName,Self));
+                break;
+
+            case Messages.JoinGroup joinGroup:
+                joinGroup.GroupHandler?.Tell(new Messages.JoinGroup(groupId:joinGroup.GroupId,groupMember:Self));
+                break;
+
+            case Messages.SendMessageToGroup messageToGroup:
+                messageToGroup.GroupHandler?.Tell(new Messages.SendMessageToGroup(groupId:messageToGroup.GroupId,userName:UserName,messageBody:messageToGroup.MessageBody,groupMember:Self));
+                break;
+
+            case Messages.ShowGroupChat showGroupChat:
+                showGroupChat.GroupHandler?.Tell(new Messages.ShowGroupChat(groupId:showGroupChat.GroupId,groupMember:Self));
+                break;
         }
     }
 }
